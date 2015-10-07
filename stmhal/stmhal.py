@@ -1,5 +1,19 @@
-#!/usr/bin/env python
+"""
+stmhal.py
 
+Jupyter kernel for the stmhal port of micropython
+
+Notes:
+    - The following must be run prior to any micropython code
+        $ import sys!!
+        $ sys.path.append('<path_to>/micropython/tools')!!
+        $ import pyboard!!
+        $ pyb = pyboard.Pyboard('<tty_device>')!!
+    - The '!!' is how you run commands with the python 3 interpreter
+        in Jupyter/Ipython. Any commands run without '!!' will be sent
+        to the pyboard for processing
+"""
+#!/usr/bin/env python
 from __future__ import print_function
 import os
 import sys
@@ -51,7 +65,6 @@ class MPKernelStmhal(IPythonKernel):
         TODO:
             - run multiline commands -> use docstring notation when running 
                 the commands since it preserves the '\n'
-            - run eval and exec commands (i.e. be able to print and just run 1+2)
             - parse the output correctly (utf-8 encoded -> 'string'.decode("utf-8"))
             - catch the exceptions (pyboard error)
             - handle different quotation marks
@@ -64,7 +77,7 @@ class MPKernelStmhal(IPythonKernel):
         else:
             lines = code.splitlines()
             newlines = '\n'.join(lines)
-            newCodeStr = 'pyb.exec_("""{}""")'.format(newlines)
+            newCodeStr = 'pyb.exec_raw(command="""{}""", timeout=None)'.format(newlines)
 
         # return super(MPKernelStmhal, self).do_execute(newCodeStr, silent, store_history, user_expressions, allow_stdin)
 

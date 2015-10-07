@@ -38,7 +38,15 @@ You must set the environment variable for the unix micropython::
 
 Stmhal port
 ------------
-- TODO: Write stmhal details
+You need to run some setup boilerplate code before you can run any micropython
+code, see the examples directory::
+
+    $ import sys!!
+    $ sys.path.append('<path_to>/micropython/tools')!!
+    $ import pyboard!!
+    $ pyb = pyboard.Pyboard('<tty_device>')!!
+
+The '!!' is how you run commands with the python 3 interpreter in Jupyter/Ipython. Any commands run without '!!' will be sent to the pyboard for processing
 
 Usage
 =====
