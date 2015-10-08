@@ -8,8 +8,8 @@ WARNING:
 Requirements
 ============
 * Python 3.4+
-* Jupyter  >= 1.0.0 (installed with pip below)
-* pyserial >= 2.7   (installed with pip below)
+* Jupyter  >= 1.0.0 (install with pip)
+* pyserial >= 2.7   (install with pip)
  
 Installation
 ============
