@@ -128,6 +128,13 @@ class MPKernelUnix(Kernel):
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
+        # The path to the unix micropython should be in the PATH, if not check
+        # the env for MPUNIX
+        #TODO: Use shutil.which() in python 3.3+
+        self.micropython_exe = 'micropython'
+        if os.environ.get('MPUNIX') is not None:
+            self.micropython_exe = os.environ.get('MPUNIX')
+
         self._start_interpreter()
 
     def _start_interpreter(self):

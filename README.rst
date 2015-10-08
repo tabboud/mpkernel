@@ -32,9 +32,13 @@ Make sure you have the packages under requirements installed then run the follow
 
 Unix port
 ---------
-You must set the environment variable for the unix micropython::
+You must add micropython to the environments PATH variable::
         
-    $ export MPUNIX=<PATH_TO_UNIX_MICROPYTHON>
+    $ export PATH="<path_to>/micropython/unix:$PATH"
+
+Alternatively, you can set the following environment variable::
+
+    $ export MPUNIX=<path_to>/micropython/unix
 
 Stmhal port
 ------------
