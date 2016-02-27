@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/TDAbboud/mpkernel.svg?branch=master
+    :target: https://travis-ci.org/TDAbboud/mpkernel
+
 mpkernel
 ========
 Jupyter/IPython kernels for micropython
