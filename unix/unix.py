@@ -14,7 +14,7 @@ except ImportError:
 from pexpect import replwrap, EOF
 
 # TODO: Get this from __init__.py
-__version__ = '0.1'
+__version__ = '0.2'
 
 try:
     from traitlets import Unicode

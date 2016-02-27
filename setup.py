@@ -86,7 +86,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name=pkg_main,
-    version='0.8900',
+    version='0.2',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
