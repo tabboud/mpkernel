@@ -84,3 +84,11 @@ class MPKernelStmhal(IPythonKernel):
         # TODO: fetch return code here and parse it out, then return
         self._output = super(MPKernelStmhal, self).do_execute(newCodeStr, silent, store_history, user_expressions, allow_stdin)
         return self._output
+
+
+if __name__ == "__main__":
+    from ipykernel.kernelapp import IPKernelApp
+
+    # Launch the pyboard port
+    IPKernelApp.launch_instance(kernel_class=MPKernelStmhal)
+

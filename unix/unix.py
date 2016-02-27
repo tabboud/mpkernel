@@ -210,3 +210,10 @@ class MPKernelUnix(Kernel):
             raise ValueError("Invalid status: %r" % status)
 
         return reply
+
+if __name__ == "__main__":
+    from ipykernel.kernelapp import IPKernelApp
+
+    # Launch the unix port
+    IPKernelApp.launch_instance(kernel_class=MPKernelUnix)
+
