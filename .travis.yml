@@ -1,0 +1,28 @@
+sudo: required
+dist: trusty
+language: python
+python:
+    - "3.4"
+
+before_install:
+    # Install micropython dependencies
+    - sudo add-apt-repository -y ppa:terry.guo/gcc-arm-embedded
+    - sudo dpkg --add-architecture i386
+    - sudo apt-get update -qq
+    - sudo apt-get install -y gcc python3 gcc-multilib gcc-arm-none-eabi pkg-config libffi-dev libffi-dev:i386 mingw32
+    - git clone http://github.com/micropython/micropython.git ~/builds/micropython
+    # Add unix micropython to the path
+    - export PATH=~/home/builds/micropython/unix/micropython:$PATH
+
+install:
+    # Install micropython
+    - pushd ~/builds/micropython
+    - make -C unix
+    - popd
+    # Install mpkernel and dependencies
+    - pip install -r requirements.txt
+    - make install
+
+script:
+    make test
+
