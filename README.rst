@@ -68,6 +68,11 @@ run either kernel from the console::
     $ jupyter console --kernel=mpunix
     $ jupyter console --kernel=mpstmhal
 
+Vagrant
+=======
+run vagrant up from within this repository to create a mpkernel development
+environment, with the latest micropython build
+
 Contributing
 ============
 1. Fork it!
