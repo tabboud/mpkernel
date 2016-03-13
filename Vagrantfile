@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
   # use ubuntu 14.04 as the base image
   config.vm.box = "ubuntu/trusty64"
   config.vm.network "public_network"
-
+  config.vm.network "forwarded_port", guest: 8888, host: 8888
 
   # Provider-specific configuration
   # Example for VirtualBox:
