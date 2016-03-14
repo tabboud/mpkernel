@@ -65,11 +65,11 @@ start the notebook server::
     $ jupyter notebook
 
 select either micropython-unix or micropython-stmhal from the drop down menu  
+
 .. or
     run either kernel from the console::
-
-        $ jupyter console --kernel=mpunix
-        $ jupyter console --kernel=mpstmhal
+    $ jupyter console --kernel=mpunix
+    $ jupyter console --kernel=mpstmhal
 
 Vagrant
 =======
