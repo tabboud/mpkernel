@@ -1,12 +1,11 @@
 FROM debian:jessie
 
-USER root
-
 # Install OS dependencies
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -yq dist-upgrade \
  && apt-get install -yq --no-install-recommends \
     wget \
+    curl \
     bzip2 \
     ca-certificates \
     sudo \
@@ -15,35 +14,30 @@ RUN apt-get update && apt-get -yq dist-upgrade \
     vim \
     make \
     gcc \
- && apt-get clean \
+    pkg-config \
+    libffi-dev \
+    build-essential \
+    autoconf \
+    autogen \
+    automake \
+    libtool \
+    libltdl-dev \
+ && apt-get clean
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
 # Configure the environment
+ENV WORK_DIR /work
 ENV CONDA_DIR /opt/conda
 ENV PATH $CONDA_DIR/bin:$PATH
 ENV SHELL /bin/bash
-ENV NB_USER jovyan
-ENV NB_UID 1000
-ENV HOME /home/$NB_USER
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-# Create jovyan user with UID=1000 and in the 'users' group
-RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
-    mkdir -p $CONDA_DIR && \
-        chown $NB_USER $CONDA_DIR
+RUN mkdir -p WORK_DIR
 
-USER $NB_USER
-
-
-# Setup jovyan home directory
-RUN mkdir /home/$NB_USER/work && \
-    mkdir /home/$NB_USER/.jupyter && \
-    echo "cacert=/etc/ssl/certs/ca-certificates.crt" > /home/$NB_USER/.curlrc
-
-# Install conda as jovyan
+# Install conda
 RUN cd /tmp && \
     mkdir -p $CONDA_DIR && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -53,19 +47,20 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
     conda clean -tipsy
 
-# Install Jupyter Notebook and Hub
-RUN conda install --yes \
+# Install Jupyter Notebook
+RUN conda install --quiet --yes \
     'notebook=4.4.*' \
     && conda clean -tipsy
 
-USER root
-
 EXPOSE 8888
-WORKDIR /home/$NB_USER/work
+WORKDIR /work
 
-RUN git clone http://github.com/micropython/micropython.git /home/$NB_USER/work/micropython
+# Build micropython
+RUN git clone http://github.com/micropython/micropython.git /work/micropython && \
+    cd /work/micropython && \
+    git submodule update --init && \
+    make -C unix deplibs && \
+    make -C unix
 
-COPY . /home/$NB_USER/work/mpkernel
-
-USER $NB_USER
+COPY . /work/mpkernel
 

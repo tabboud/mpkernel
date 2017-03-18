@@ -11,19 +11,32 @@ endef
 export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
+# Docker Configurations
+JUPYTER_PORT := 8888:8888
+BIND_DIR := .
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
+GIT_BRANCH_CLEAN := $(shell echo $(GIT_BRANCH) | sed -e "s/[^[:alnum:]]/-/g")
+DOCKER_IMAGE := mpkernel$(if $(GIT_BRANCH_CLEAN),:$(GIT_BRANCH_CLEAN))
+DOCKER_PORT_FORWARD := $(if $(JUPYTER_PORT),-p "$(JUPYTER_PORT)",)
+DOCKER_MOUNT := $(if $(BIND_DIR),-v "$(CURDIR)/$(BIND_DIR):/work/mpkernel/$(BIND_DIR)")
+DOCKER_FLAGS := docker run --rm -it $(DOCKER_MOUNT) $(DOCKER_PORT_FORWARD)
+DOCKER_RUN_DOCKER := $(DOCKER_FLAGS) "$(DOCKER_IMAGE)"
+
 help:
-	@echo "clean - remove all build, test, coverage and Python artifacts"
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
-	@echo "clean-test - remove test and coverage artifacts"
-	@echo "lint - check style with flake8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package"
-	@echo "install - install the package to the active Python's site-packages"
+	@echo "clean        - remove all build, test, coverage and Python artifacts"
+	@echo "clean-build  - remove build artifacts"
+	@echo "clean-pyc    - remove Python file artifacts"
+	@echo "clean-test   - remove test and coverage artifacts"
+	@echo "lint         - check style with flake8"
+	@echo "test         - run tests quickly with the default Python"
+	@echo "test-all     - run tests on every Python version with tox"
+	@echo "coverage     - check code coverage quickly with the default Python"
+	@echo "docs         - generate Sphinx HTML documentation, including API docs"
+	@echo "release      - package and upload a release"
+	@echo "dist         - package"
+	@echo "install      - install the package to the active Python's site-packages"
+	@echo "docker-build - build the docker image"
+	@echo "docker-run   - run the docker image"
 
 clean: clean-build clean-pyc clean-test
 
@@ -82,3 +95,9 @@ dist: clean
 
 install: clean
 	python setup.py install
+
+docker-build:
+	docker build -t "$(DOCKER_IMAGE)" .
+
+docker-run: docker-build
+	$(DOCKER_RUN_DOCKER) bash
