@@ -76,6 +76,15 @@ Vagrant
 run vagrant up from within this repository to create an mpkernel development
 environment, with the latest micropython build
 
+Docker Dev Environment
+======================
+Build the docker image
+`docker build -t mpkernel:v0 .`
+Run the docker image and mount the mpkernel source code
+-p -> forward the ports
+-v -> bind mount the mpkernel code
+`docker run -it -p 8888:8888 -v <path_to_mpkernel>:/home/jovyan/work/mpkernel mpkernel:v0`
+
 Contributing
 ============
 1. Fork it!
