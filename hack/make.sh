@@ -5,17 +5,16 @@ set -e
 
 # This script is meant to be run inside the
 # docker development environment
-
-if [ $# -lt 1 ]; then
-    help
-    exit 1
-fi
-
 function help() {
     echo "USAGE:"
     echo "    start: Start the jupyter notebook"
     echo ""
 }
+
+if [ $# -lt 1 ]; then
+    help
+    exit 1
+fi
 
 function start() {
     export PATH=/work/micropython/unix:$PATH
