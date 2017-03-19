@@ -18,6 +18,7 @@ pkg_stmhal = 'stmhal'
 # ----------------------------------------------------------------------------
 kernel_json_unix = {
     "display_name": "micropython-unix",
+    "language": "python",
     "argv": [
         sys.executable,
         "-m",
@@ -29,6 +30,7 @@ kernel_json_unix = {
 
 kernel_json_pyboard = {
     "display_name": "micropython-stmhal",
+    "language": "python",
     "argv": [
         sys.executable,
         "-m",

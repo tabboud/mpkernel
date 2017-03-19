@@ -27,7 +27,6 @@ except ImportError:
 
 from ipykernel.ipkernel import IPythonKernel
 
-# TODO: Get this from __init__.py
 __version__ = '0.2'
 
 try:
