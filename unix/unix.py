@@ -6,10 +6,7 @@ import sys
 import signal
 from tornado.ioloop import IOLoop
 
-try:
-    from ipykernel.kernelbase import Kernel
-except ImportError:
-    from IPython.kernel.zmq.kernelbase import Kernel
+from ipykernel.kernelbase import Kernel
 
 from pexpect import replwrap, EOF
 
