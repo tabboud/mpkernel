@@ -1,6 +1,4 @@
-[![Build Status][travis-img]][travis-repo]
-[travis-img]:  https://travis-ci.org/TDAbboud/mpkernel.svg?branch=master
-[travis-repo]: https://travis-ci.org/TDAbboud/mpkernel
+[![Build Status](https://travis-ci.org/TDAbboud/mpkernel.svg?branch=master)](https://travis-ci.org/TDAbboud/mpkernel)
 
 # mpkernel
 

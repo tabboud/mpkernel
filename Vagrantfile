@@ -23,7 +23,7 @@ Vagrant.configure(2) do |config|
     add-apt-repository -y ppa:terry.guo/gcc-arm-embedded
     dpkg --add-architecture i386
     apt-get update -qq
-    apt-get install -y gcc git python-pip python3 python3-dev gcc-multilib gcc-arm-none-eabi pkg-config libffi-dev libffi-dev:i386
+    apt-get install -y --force-yes gcc git python-pip python3 python3-dev gcc-multilib gcc-arm-none-eabi pkg-config libffi-dev libffi-dev:i386
     su vagrant -c "git clone http://github.com/micropython/micropython.git /home/vagrant/micropython"
 
     su vagrant -c "sudo pip install virtualenv virtualenvwrapper"
