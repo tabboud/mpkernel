@@ -116,12 +116,17 @@ class MPKernelUnix(Kernel):
     # Required variables
     implementation = 'mpkernel'
     implementation_version = __version__
-    banner = 'MPKernelUnix Banner'
+    banner = 'Welcome to the Unix port of MicroPython'
     language_info = {
                     'name': 'micropython',
-                    'codemirror_mode': 'python',
+                    'version': '3',
+                    'codemirror_mode': {
+                            'name': 'python',
+                            'version': 3
+                        }
                     'mimetype': 'text/x-python',
-                    'file_extension': '.py'
+                    'file_extension': '.py',
+                    'pygments_lexer': 'python3',
                     }
     micropython_exe = os.environ.get('MPUNIX')
 
