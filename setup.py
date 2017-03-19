@@ -80,7 +80,7 @@ class install_with_kernelspec(install):
 #     # Die, setuptools, die.
 #     sys.argv.remove(svem_flag)
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 
