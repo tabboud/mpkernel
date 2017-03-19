@@ -18,10 +18,8 @@ function help() {
 }
 
 function start() {
-    echo "in start"
-
-    # export PATH=/work/micropython/unix:$PATH
-    # jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser &
+    export PATH=/work/micropython/unix:$PATH
+    jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser &
 }
 
 case "$1" in
