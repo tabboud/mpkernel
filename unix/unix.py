@@ -1,13 +1,11 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import os
 import sys
 import signal
 from tornado.ioloop import IOLoop
-
 from ipykernel.kernelbase import Kernel
-
 from pexpect import replwrap, EOF
 
 __version__ = '0.2'
@@ -28,89 +26,46 @@ class MPUnixInterpreter(replwrap.REPLWrapper):
         self.output = ''
         super(MPUnixInterpreter, self).__init__(cmd, self.prompt, None, **kw)
 
-    def run_command(self, command, timeout=30):
-        """Run the python command """
-        self.buffer = []
-        self.output = ''
-        try:
-            # Replace the super call
-            cmdlines = self._reconstruct_cmds(command.splitlines())
-            self.child.sendline(cmdlines[0])
-            for line in cmdlines[1:]:
-                self._expect_prompt(timeout=1)
-                self.child.sendline(line)
+    def run_command(self, command, timeout=-1):
+        """Send a command to the REPL, wait for and return output.
 
-            # Command was fully submitted, now wait for the next prompt
-            if self._expect_prompt(timeout=timeout) == 1:
-                # We got the continuation prompt - command was incomplete
-                self.child.kill(signal.SIGINT)
-                self._expect_prompt(timeout=1)
-                raise ValueError("Continuation prompt found - input was incomplete:\n" + command)
-        finally:
-            self.output = ''.join(self.buffer)
-            self.buffer = []
-        return self.output
-
-    def _no_echo(self, buf):
-        """Filter out input-echo"""
-        store = False
-        lines = []
-        for line in buf.splitlines(True):
-            if store:
-                lines.append(line)
-            elif '\r\n' == line:
-                store = True
-        return ''.join(lines)
-
-    def _expect_prompt(self, timeout=30):
-        x = ''
-        try:
-            x = self.child.expect_exact([self.prompt, '... '], timeout=timeout)
-        finally:
-            buf = self._no_echo(self.child.before)
-            self.buffer.append(buf)
-            return x
-
-    def _reconstruct_cmds(self, lines):
-        """Parse the commands and add in '' where neccesary
-
-        Args:
-            lines: lines that make up a command
-        Returns:
-            list of commands to run
-
-        TODO: perform this in-place instead of making a new array
+        :param str command: The command to send. Trailing newlines are not needed.
+          This should be a complete block of input that will trigger execution;
+          if a continuation prompt is found after sending input, :exc:`ValueError`
+          will be raised.
+        :param int timeout: How long to wait for the next prompt. -1 means the
+          default from the :class:`pexpect.spawn` object (default 30 seconds).
+          None means to wait indefinitely.
         """
-        # iterate 1 time to see if there are any continuation blocks
-        # if not, then just return the command lines
-        # assume we dont have to change the commands
-        change = False
-        for cmd in lines:
-            if cmd.endswith(':'):
-                change = True
-                break
-        if change is False:
-            lines.append('')
-            return lines
-        new_cmdlines = []
-        parsing_continuation = False
-        for cmd in lines:
-            if cmd.endswith(':') or (cmd.startswith(' ') and parsing_continuation is True):
-                parsing_continuation = True
-                new_cmdlines.append(cmd)
-            else:
-                new_cmdlines.append('')
-                new_cmdlines.append(cmd)
-                parsing_continuation = False
-        new_cmdlines.append('')
-        return new_cmdlines
+        # Split up multiline commands and feed them in bit-by-bit
+        cmdlines = [command]
+        # splitlines ignores trailing newlines - add it back in manually
+        if command.endswith('\n'):
+            cmdlines.append('')
+        if not cmdlines:
+            raise ValueError("No command was given")
+
+        res = []
+        self.child.sendline(cmdlines[0])
+        for line in cmdlines[1:]:
+            self._expect_prompt(timeout=timeout)
+            res.append(self.child.before)
+            self.child.sendline(line)
+
+        # Command was fully submitted, now wait for the next prompt
+        if self._expect_prompt(timeout=timeout) == 1:
+            # We got the continuation prompt - command was incomplete
+            self.child.kill(signal.SIGINT)
+            self._expect_prompt(timeout=1)
+            raise ValueError("Continuation prompt found - input was incomplete:\n"
+                             + command)
+        return u''.join(res + [self.child.before])
 
 
 class MPKernelUnix(Kernel):
-    """ Kernel for the Unix Port of micropython
-
     """
-    # Required variables
+    Kernel for the Unix Port of micropython
+    """
     implementation = 'mpkernel'
     implementation_version = __version__
     banner = 'Welcome to the Unix port of MicroPython'
@@ -120,25 +75,18 @@ class MPKernelUnix(Kernel):
                     'codemirror_mode': {
                             'name': 'python',
                             'version': 3
-                        }
+                        },
                     'mimetype': 'text/x-python',
                     'file_extension': '.py',
                     'pygments_lexer': 'python3',
                     }
-    micropython_exe = os.environ.get('MPUNIX')
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
-        # The path to the unix micropython should be in the PATH, if not check
-        # the env for MPUNIX
-        #TODO: Use shutil.which() in python 3.3+
         self.micropython_exe = 'micropython'
-        if os.environ.get('MPUNIX') is not None:
-            self.micropython_exe = os.environ.get('MPUNIX')
+        self.start_interpreter()
 
-        self._start_interpreter()
-
-    def _start_interpreter(self):
+    def start_interpreter(self):
         # Signal handlers are inherited by forked processes, we can't easily
         # reset it from the subprocess. Kernelapp ignores SIGINT except in
         # message handlers, we need to temporarily reset the SIGINT handler
@@ -148,10 +96,10 @@ class MPKernelUnix(Kernel):
             self.interpreter = MPUnixInterpreter(self.micropython_exe)
         finally:
             signal.signal(signal.SIGINT, sig)
-        # self.language_version = self.interpreter.child.before.str
 
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
+
         if not code.strip():
             return {
                 'status': 'ok',
@@ -159,10 +107,17 @@ class MPKernelUnix(Kernel):
                 'payload': [],
                 'user_expressions': {},
             }
+
         status = 'ok'
         traceback = None
+
         try:
-            output = self.interpreter.run_command(code, timeout=5)
+            # compile the code then run an exec of that code object
+            compile_output = self.interpreter.run_command("c = compile({0!r}, 'mpkernel', 'exec')".format(code), timeout=5)
+            if compile_output is not None:
+                output = self.interpreter.run_command('exec(c)', timeout=5)
+            else:
+                raise Exception("Error in compile: ({})\n".format(compile_output))
         except KeyboardInterrupt:
             self.interpreter.child.sendintr()
             status = 'interrupted'
@@ -170,13 +125,13 @@ class MPKernelUnix(Kernel):
             output = self.interpreter.output
         except ValueError:
             output = self.interpreter.output + 'Incomplete input, restarting'
-            self._start_interpreter()
+            self.start_interpreter()
         except EOF:
             output = self.interpreter.output + ' Restarting MPKernelUnix'
-            self._start_interpreter()
-        except EOF:
+            self.start_interpreter()
             status = 'error'
             traceback = []
+
         if not self.interpreter.child.isalive():
             self.log.error("MPKernelUnix interpreter died")
             loop = IOLoop.current()
