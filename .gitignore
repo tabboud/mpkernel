@@ -45,3 +45,5 @@ coverage.xml
 *.mo
 *.pot
 
+# Notebooks
+hack/notebooks/*.ipynb*
