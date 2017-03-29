@@ -76,12 +76,7 @@ class install_with_kernelspec(install):
                 install_kernel_spec(td, kernel_name=kernel_name,
                                     user=not self.user, replace=True)
 
-# TODO: The following prevents having to add --egg for pip install
-# svem_flag = '--single-version-externally-managed'
-# if svem_flag in sys.argv:
-#     # Die, setuptools, die.
-#     sys.argv.remove(svem_flag)
-
+# Get the readme text
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
@@ -104,10 +99,10 @@ setup(
     # Metadata for PyPI
     author='Tony Abboud',
     author_email='tony.abboud54@gmail.com',
-    description='Micropython Kernels for Jupyter/Ipython',
+    description='Jupyter Kernels for Micropython',
     long_description=readme,
     license='MIT',
-    keywords=['Micropython', 'ipython', 'interactive'],
+    keywords=['Micropython', 'ipython', 'jupyter', 'interactive'],
     # Project home page
     url='https://github.com/tdabboud/%s' % pkg_main,
     # download_url='https://github.com/tdabboud/%s/tarball/0.1' % pkg_main,
