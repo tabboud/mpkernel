@@ -4,17 +4,11 @@
 
 > An experimental Jupyter kernel for micropython
 
-*NOTES:*
-
-This currently only supports running single line commands on the unix port
-of micropython. The multi-line commands are a work in progress due to the
-way the micropython repl auto-indents code (see the other branches)
-
 ## Requirements
 
 * Python 3.4+
-* Jupyter  >= 1.0.0 (install with pip)
-* pyserial >= 2.7   (install with pip)
+* Jupyter  >= 1.0.0
+* pyserial >= 2.7   (for stmhal kernel)
  
 ## Installation
 
@@ -42,11 +36,6 @@ $ make install
 You must add micropython to the environments PATH variable:
 ```bash
 $ export PATH="<path_to>/micropython/unix:$PATH"
-```
-
-Alternatively, you can set the following environment variable:
-```bash
-$ export MPUNIX=<path_to>/micropython/unix
 ```
 
 ## Stmhal port
@@ -80,11 +69,6 @@ select either micropython-unix or micropython-stmhal from the drop down menu
     $ jupyter console --kernel=mpstmhal
 -->
 
-## Vagrant
-
-run `vagrant up` from within this repository to create an mpkernel development
-environment, with the latest micropython build
-
 ## Docker Dev Environment
 
 ```bash
@@ -94,6 +78,11 @@ $ make docker-build
 # run the docker image
 $ make docker-run
 ```
+
+## Vagrant
+
+run `vagrant up` from within this repository to create an mpkernel development
+environment, with the latest micropython build
 
 ## Contributing
 
